@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar | CineTrack{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <a href="{% url 'listar_contenido' %}" class="btn btn-outline-light mb-3 float-end">
+    <i class="bi bi-arrow-left-circle"></i> Volver al catálogo
+  </a>
+
+  <h2 class="titulo-principal mb-4">
+    <i class="bi bi-pencil-square"></i> Editar
+    <span class="mx-1" style="color: #bbb;">|</span>
+    <small class="fs-5" style="color: #dddddd; font-weight: 500;">{{ contenido.get_tipo_display }}</small>
+  </h2>
+
+  {% if mensaje_error %}
+    <div class="alert alert-danger">{{ mensaje_error }}</div>
+  {% endif %}
+
+  <form method="post" class="bg-dark text-white p-4 rounded shadow-lg">
+    {% csrf_token %}
+
+    <div class="row">
+      <!-- Columna 1: Imagen -->
+      <div class="col-md-4 mb-3">
+        <img src="{{ contenido.imagen }}" alt="Imagen" class="img-fluid rounded shadow-sm w-100">
+      </div>
+
+      <!-- Columna 2: Información -->
+      <div class="col-md-8">
+        <!-- Título -->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Título:</label>
+            {{ form.titulo }}
+          </div>
+        </div>
+
+        <!-- Tipo y Fecha -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Tipo:</label>
+            {{ form.tipo }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha:</label>
+            <input type="text" class="form-control form-control-sm" value="{{ contenido.fecha|date:'d/m/Y' }}" readonly>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Resumen:</label>
+          <div class="form-control bg-light text-dark" style="min-height: 150px; text-align: justify; text-justify: inter-word;">
+            {{ contenido.resumen|linebreaksbr }}
+          </div>
+        </div>
+
+        <!-- Fila: Estado, Plataforma, Calificación, Veces vista -->
+        <div class="row mb-4">
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Estado:</label>
+            {{ form.estado }}
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Plataforma:</label>
+            {{ form.plataforma }}
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Calificación:</label>
+            {{ form.calificacion }}
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Veces vista:</label>
+            {{ form.veces_vista }}
+          </div>
+        </div>
+
+        <!-- Fila: Favorita, Volvería a ver, Tendrá continuación -->
+        <div class="row mb-4">
+          <div class="col-md-4 mb-3 d-flex align-items-center">
+            <label class="me-2 mb-0">¿Favorita?</label>
+            {{ form.favorita }}
+          </div>
+          <div class="col-md-4 mb-3 d-flex align-items-center">
+            <label class="me-2 mb-0">¿Volvería a ver?</label>
+            {{ form.volveria_a_ver }}
+          </div>
+          <div class="col-md-4 mb-3 d-flex align-items-center">
+            <label class="me-2 mb-0">¿Tendrá continuación?</label>
+            {{ form.tendra_continuacion }}
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <div class="d-flex justify-content-center mt-5">
+          <button type="submit"
+                  class="btn btn-outline-success"
+                  style="--bs-btn-color:#a855f7;
+                         --bs-btn-border-color:#a855f7;
+                         --bs-btn-hover-bg:#a855f7;
+                         --bs-btn-hover-border-color:#a855f7;
+                         --bs-btn-active-bg:#9333ea;
+                         --bs-btn-active-border-color:#9333ea;
+                         --bs-btn-focus-shadow-rgb:168,85,247;">
+            <i class="bi bi-check-circle"></i> Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

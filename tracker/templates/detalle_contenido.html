@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}{{ contenido.titulo }} | CineTrack{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <div class="card bg-dark text-white shadow p-3 border-0">
+    <div class="row g-4">
+
+      <!-- Imagen -->
+      <div class="col-md-4 text-center">
+        {% if contenido.imagen %}
+          <img src="{{ contenido.imagen }}" alt="Portada de {{ contenido.titulo }}" class="img-fluid rounded shadow">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center bg-secondary bg-opacity-25 rounded"
+               style="height:420px;">
+            <div class="text-center">
+              <i class="bi bi-image" style="font-size:3rem;"></i>
+              <p class="mt-2 mb-0">Sin imagen</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Info -->
+      <div class="col-md-8">
+        <h1 class="titulo-principal mb-3">
+          {{ contenido.titulo }}
+          <small class="fs-4" style="color:#cccccc;">
+            ({{ contenido.fecha|date:"Y"|default:"—" }})
+          </small>
+        </h1>
+
+        <!-- Badges -->
+        <div class="mb-3">
+          <span class="badge rounded-pill bg-secondary me-2">{{ contenido.get_tipo_display }}</span>
+          <span class="badge rounded-pill bg-secondary me-2">{{ contenido.get_plataforma_display }}</span>
+          <span class="badge rounded-pill {% if contenido.estado == 'vista' %}bg-success{% else %}bg-warning text-dark{% endif %} me-2">
+            {{ contenido.get_estado_display }}
+          </span>
+
+          {% if contenido.calificacion %}
+            <span class="badge rounded-pill bg-info text-dark">
+              {{ contenido.get_calificacion_display }}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Resumen -->
+          {% if contenido.resumen %}
+            <p class="mb-2"><strong>Resumen:</strong></p>
+            <p class="mb-3 lh-base pe-4" style="text-align: justify; text-justify: inter-word;">
+              {{ contenido.resumen|linebreaksbr }}
+            </p>
+          {% endif %}
+
+        <!-- Fecha -->
+        <p class="mb-4"><strong>Fecha:</strong> {{ contenido.fecha|date:"d/m/Y"|default:"—" }}</p>
+
+        <!-- Datos adicionales (con guiones) -->
+        <dl class="row gy-2 gx-3 mb-4">
+          <dt class="col-6 col-md-4 col-lg-3 text-secondary fw-semibold">Veces vista</dt>
+          <dd class="col-6 col-md-8 col-lg-9 mb-0 fw-semibold">
+            {% if contenido.veces_vista %}{{ contenido.veces_vista }}{% else %}-{% endif %}
+          </dd>
+
+          <dt class="col-6 col-md-4 col-lg-3 text-secondary fw-semibold">¿Volverías a verla?</dt>
+          <dd class="col-6 col-md-8 col-lg-9 mb-0 fw-semibold">
+            {{ contenido.volveria_a_ver|yesno:"Sí,-,-" }}
+          </dd>
+
+          <dt class="col-6 col-md-4 col-lg-3 text-secondary fw-semibold">¿Tendrá continuación?</dt>
+          <dd class="col-6 col-md-8 col-lg-9 mb-0 fw-semibold">
+            {{ contenido.tendra_continuacion|yesno:"Sí,-,-" }}
+          </dd>
+
+          <dt class="col-6 col-md-4 col-lg-3 text-secondary fw-semibold">Favorita</dt>
+          <dd class="col-6 col-md-8 col-lg-9 mb-0 fw-semibold">
+            {{ contenido.favorita|yesno:"⭐,No,-" }}
+          </dd>
+        </dl>
+
+        <!-- Botón Regresar (morado) -->
+        <a href="{% url 'listar_contenido' %}"
+           class="btn btn-outline-success"
+           style="--bs-btn-color:#a855f7;
+                  --bs-btn-border-color:#a855f7;
+                  --bs-btn-hover-bg:#a855f7;
+                  --bs-btn-hover-border-color:#a855f7;
+                  --bs-btn-active-bg:#9333ea;
+                  --bs-btn-active-border-color:#9333ea;
+                  --bs-btn-focus-shadow-rgb:168,85,247;">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

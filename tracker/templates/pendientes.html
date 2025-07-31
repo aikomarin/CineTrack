@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Pendientes | CineTrack{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="titulo-principal mb-0">
+      <i class="bi bi-hourglass-split"></i> Pendientes por ver
+    </h1>
+    <div class="text-end small text-light">
+      <span class="me-3">Películas: <strong>{{ count_peliculas }}</strong></span>
+      <span>Series: <strong>{{ count_series }}</strong></span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Columna Películas -->
+    <div class="col-lg-6">
+      <div class="card bg-dark text-white shadow border-0">
+        <div class="card-body">
+          <h3 class="subtitulo mb-3"><i class="bi bi-film"></i> Películas</h3>
+
+          {% if peliculas %}
+            <ul class="list-group list-group-flush">
+              {% for p in peliculas %}
+                <li class="list-group-item bg-dark text-white d-flex align-items-center justify-content-between px-0">
+                  <div class="d-flex align-items-center">
+                    {% if p.imagen %}
+                      <img src="{{ p.imagen }}" alt="{{ p.titulo }}" class="rounded shadow-sm me-3"
+                           style="width:52px; height:78px; object-fit:cover;">
+                    {% else %}
+                      <div class="rounded bg-secondary bg-opacity-25 me-3 d-flex align-items-center justify-content-center"
+                           style="width:52px; height:78px;">
+                        <i class="bi bi-image"></i>
+                      </div>
+                    {% endif %}
+
+                    <div>
+                      <a href="{% url 'detalle_contenido' p.pk %}" class="text-white fw-semibold">
+                        {{ p.titulo }}
+                        {% if p.fecha %}<small class="text-secondary">({{ p.fecha|date:"Y" }})</small>{% endif %}
+                      </a>
+                      <div class="mt-1">
+                        <span class="badge rounded-pill bg-secondary me-1">{{ p.get_plataforma_display|default:"—" }}</span>
+                        <span class="badge rounded-pill bg-warning text-dark">Pendiente</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2">
+                    {% if p.favorita %}
+                      <span title="Favorita">⭐</span>
+                    {% endif %}
+                    <form method="post" action="{% url 'marcar_vista' p.pk %}">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-success"
+                              title="Marcar como vista"
+                              style="--bs-btn-color:#a855f7;
+                                     --bs-btn-border-color:#a855f7;
+                                     --bs-btn-hover-bg:#a855f7;
+                                     --bs-btn-hover-border-color:#a855f7;
+                                     --bs-btn-active-bg:#9333ea;
+                                     --bs-btn-active-border-color:#9333ea;
+                                     --bs-btn-focus-shadow-rgb:168,85,247;">
+                        <i class="bi bi-check2-circle"></i>
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="mb-0 text-secondary">No tienes películas pendientes. 🎬</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Series -->
+    <div class="col-lg-6">
+      <div class="card bg-dark text-white shadow border-0">
+        <div class="card-body">
+          <h3 class="subtitulo mb-3"><i class="bi bi-collection-play"></i> Series</h3>
+
+          {% if series %}
+            <ul class="list-group list-group-flush">
+              {% for s in series %}
+                <li class="list-group-item bg-dark text-white d-flex align-items-center justify-content-between px-0">
+                  <div class="d-flex align-items-center">
+                    {% if s.imagen %}
+                      <img src="{{ s.imagen }}" alt="{{ s.titulo }}" class="rounded shadow-sm me-3"
+                           style="width:52px; height:78px; object-fit:cover;">
+                    {% else %}
+                      <div class="rounded bg-secondary bg-opacity-25 me-3 d-flex align-items-center justify-content-center"
+                           style="width:52px; height:78px;">
+                        <i class="bi bi-image"></i>
+                      </div>
+                    {% endif %}
+
+                    <div>
+                      <a href="{% url 'detalle_contenido' s.pk %}" class="text-white fw-semibold">
+                        {{ s.titulo }}
+                        {% if s.fecha %}<small class="text-secondary">({{ s.fecha|date:"Y" }})</small>{% endif %}
+                      </a>
+                      <div class="mt-1">
+                        <span class="badge rounded-pill bg-secondary me-1">{{ s.get_plataforma_display|default:"—" }}</span>
+                        <span class="badge rounded-pill bg-warning text-dark">Pendiente</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2">
+                    {% if s.favorita %}
+                      <span title="Favorita">⭐</span>
+                    {% endif %}
+                    <form method="post" action="{% url 'marcar_vista' s.pk %}">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-success"
+                              title="Marcar como vista"
+                              style="--bs-btn-color:#a855f7;
+                                     --bs-btn-border-color:#a855f7;
+                                     --bs-btn-hover-bg:#a855f7;
+                                     --bs-btn-hover-border-color:#a855f7;
+                                     --bs-btn-active-bg:#9333ea;
+                                     --bs-btn-active-border-color:#9333ea;
+                                     --bs-btn-focus-shadow-rgb:168,85,247;">
+                        <i class="bi bi-check2-circle"></i>
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="mb-0 text-secondary">No tienes series pendientes. 📺</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Registrar | CineTrack{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <a href="{% url 'listar_contenido' %}" class="btn btn-outline-light mb-3 float-end">
+    <i class="bi bi-arrow-left-circle"></i> Volver al catálogo
+  </a>
+
+  <h2 class="titulo-principal mb-4">
+    <i class="bi bi-plus-square"></i> Registrar
+    <span class="mx-1" style="color:#bbb;">|</span>
+    <small class="fs-5" style="color:#dddddd; font-weight:500;">Película o Serie</small>
+  </h2>
+
+  {% if mensaje_error %}
+    <div class="alert alert-danger">{{ mensaje_error }}</div>
+  {% endif %}
+
+  <form method="post" class="bg-dark text-white p-4 rounded shadow-lg" novalidate>
+    {% csrf_token %}
+
+    <!-- Título -->
+    <div class="row">
+      <div class="col-12 mb-3">
+        <label class="form-label">Título:</label>
+        {{ form.titulo }}
+      </div>
+    </div>
+
+    <!-- Tipo / Plataforma -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Tipo:</label>
+        {{ form.tipo }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Plataforma:</label>
+        {{ form.plataforma }}
+      </div>
+    </div>
+
+    <!-- Calificación / Veces vista -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Calificación:</label>
+        {{ form.calificacion }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Veces vista:</label>
+        {{ form.veces_vista }}
+      </div>
+    </div>
+
+    <!-- Checkboxes en una fila -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="form-check">
+          {{ form.volveria_a_ver }} {{ form.volveria_a_ver.label_tag }}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-check">
+          {{ form.tendra_continuacion }} {{ form.tendra_continuacion.label_tag }}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-check">
+          {{ form.favorita }} {{ form.favorita.label_tag }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Estado:</label>
+        {{ form.estado }}
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <div class="d-flex justify-content-center mt-5">
+      <button type="submit"
+              class="btn btn-outline-success"
+              style="--bs-btn-color:#a855f7;
+                     --bs-btn-border-color:#a855f7;
+                     --bs-btn-hover-bg:#a855f7;
+                     --bs-btn-hover-border-color:#a855f7;
+                     --bs-btn-active-bg:#9333ea;
+                     --bs-btn-active-border-color:#9333ea;
+                     --bs-btn-focus-shadow-rgb:168,85,247;">
+        <i class="bi bi-check-circle me-1"></i> Guardar
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

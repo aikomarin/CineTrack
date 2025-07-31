@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar contenido{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="titulo-principal"><i class="bi bi-search"></i> Buscar película o serie</h1>
+    <a href="{% url 'registrar_contenido' %}" class="btn btn-outline-light">
+      <i class="bi bi-pencil-square"></i> Registrar contenido manualmente
+    </a>
+  </div>
+
+  <!-- Formulario de búsqueda -->
+  <form method="post" class="mb-4 row g-2">
+    {% csrf_token %}
+    <div class="col-sm-9">
+      <input type="text" name="query" required value="{{ request.POST.query }}"
+             class="form-control form-control-lg" placeholder="Ej. El conjuro">
+    </div>
+    <div class="col-sm-3 text-end">
+      <button type="submit" class="btn btn-light btn-lg w-100"><i class="bi bi-search"></i> Buscar</button>
+    </div>
+  </form>
+
+  <!-- Mensajes -->
+  {% if messages %}
+    <div class="alert alert-info">
+      {% for message in messages %}
+        <p class="{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Resultados -->
+  {% if resultados %}
+    <h3 class="subtitulo mb-4"><i class="bi bi-stars"></i> Resultados:</h3>
+
+    {% for r in resultados %}
+    <form method="post" action="{% url 'guardar_desde_busqueda' %}" class="card mb-4 bg-dark text-white shadow p-3">
+      {% csrf_token %}
+
+      <div class="row g-3">
+
+        <!-- Columna izquierda: Imagen -->
+        {% if r.imagen %}
+        <div class="col-md-3 text-center">
+          <img src="{{ r.imagen }}" alt="Imagen de {{ r.titulo }}" class="img-fluid rounded shadow">
+        </div>
+        {% endif %}
+
+        <!-- Columna derecha: Info + formulario -->
+        <div class="col-md-9">
+
+          <h4 class="mb-4">{{ r.titulo }}</h4>
+          <p class="mb-0"><strong>Resumen:</strong></p>
+          <p class="mb-2" style="text-align: justify;">{{ r.resumen }}</p>
+          <p class="mb-3"><strong>Fecha:</strong> {{ r.fecha|date:"d/m/Y"|default:"—" }}</p>
+
+          <!-- Campos ocultos -->
+          <input type="hidden" name="titulo_usuario" value="{{ request.POST.query }}">
+          <input type="hidden" name="resumen" value="{{ r.resumen }}">
+          <input type="hidden" name="fecha" value="{{ r.fecha|date:'Y-m-d' }}">
+          <input type="hidden" name="imagen" value="{{ r.imagen }}">
+          <input type="hidden" name="tipo" value="{{ r.tipo }}">
+
+          <!-- Fila 1: Plataforma, Calificación -->
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label class="form-label">Plataforma:</label>
+              <select name="plataforma" class="form-select" required>
+                <option value="" selected disabled>Selecciona una plataforma…</option>
+                {% for value, label in plataformas %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Calificación:</label>
+              <select name="calificacion" class="form-select">
+                <option value="" selected disabled>Selecciona una calificación…</option>
+                <option value="excelente">Excelente</option>
+                <option value="buena">Buena</option>
+                <option value="regular">Regular</option>
+                <option value="mala">Mala</option>
+                <option value="horrible">Horrible</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fila 2: Veces vista -->
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label class="form-label">Veces vista:</label>
+              <input type="number" name="veces_vista" min="0" class="form-control">
+            </div>
+            <div class="col-md-6 d-flex align-items-center justify-content-around">
+              <div class="mt-3 form-check">
+                <input type="checkbox" name="volveria_a_ver" class="form-check-input" id="volveria{{ forloop.counter }}">
+                <label class="form-check-label" for="volveria{{ forloop.counter }}">¿Volverías a verla?</label>
+              </div>
+              <div class="mt-3 form-check">
+                <input type="checkbox" name="tendra_continuacion" class="form-check-input" id="continuacion{{ forloop.counter }}">
+                <label class="form-check-label" for="continuacion{{ forloop.counter }}">¿Tiene continuación?</label>
+              </div>
+              <div class="mt-3 form-check">
+                <input type="checkbox" name="favorita" class="form-check-input" id="favorita{{ forloop.counter }}">
+                <label class="form-check-label" for="favorita{{ forloop.counter }}">¿Es favorita?</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estado + botón -->
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <label class="form-label">Estado:</label>
+              <select name="estado" class="form-select">
+                <option value="" selected disabled>Selecciona…</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="vista">Vista</option>
+              </select>
+            </div>
+            <div class="col-md-6 text-end">
+              <button type="submit"
+                      class="btn btn-outline-success mt-3"
+                      style="--bs-btn-color:#a855f7;
+                             --bs-btn-border-color:#a855f7;
+                             --bs-btn-hover-bg:#a855f7;
+                             --bs-btn-hover-border-color:#a855f7;
+                             --bs-btn-active-bg:#9333ea;
+                             --bs-btn-active-border-color:#9333ea;
+                             --bs-btn-focus-shadow-rgb:168,85,247;">
+                <i class="bi bi-check-circle"></i> Guardar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </form>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

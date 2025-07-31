@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cinetrack
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn cinetrack.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: cinetrack.settings
+      - key: PYTHON_VERSION
+        value: 3.12

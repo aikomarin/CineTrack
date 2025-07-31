@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo | CineTrack{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <h1 class="mb-4 titulo-principal"><i class="bi bi-collection-play"></i> Catálogo registrado</h1>
+
+  <!-- FILTROS -->
+  <div class="card bg-dark text-white mb-4 shadow">
+    <div class="card-body">
+      <h5 class="card-title subtitulo"><i class="bi bi-funnel-fill"></i> Filtrar contenido</h5>
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Tipo:</label>
+          <select name="tipo" class="form-select">
+            <option value="">Todos</option>
+            <option value="pelicula" {% if filtros.tipo == "pelicula" %}selected{% endif %}>Película</option>
+            <option value="serie" {% if filtros.tipo == "serie" %}selected{% endif %}>Serie</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Plataforma:</label>
+          <select name="plataforma" class="form-select">
+            <option value="">Todas</option>
+            {% for clave, nombre in plataformas %}
+              <option value="{{ clave }}" {% if filtros.plataforma == clave %}selected{% endif %}>{{ nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Estado:</label>
+          <select name="estado" class="form-select">
+            <option value="">Todos</option>
+            <option value="pendiente" {% if filtros.estado == "pendiente" %}selected{% endif %}>Pendiente</option>
+            <option value="vista" {% if filtros.estado == "vista" %}selected{% endif %}>Vista</option>
+          </select>
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-outline-light"><i class="bi bi-search"></i> Filtrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- FIN FILTROS -->
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle text-center rounded shadow">
+      <thead class="table-secondary text-dark">
+        <tr>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Plataforma</th>
+          <th>Calificación</th>
+          <th>Veces vista</th>
+          <th>¿Ver otra vez?</th>
+          <th>Favorita</th>
+          <th>¿Continuación?</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contenido in contenidos %}
+        <tr>
+          <td>
+            <a href="{% url 'detalle_contenido' contenido.pk %}" class="text-white fw-bold">{{ contenido.titulo }}</a>
+          </td>
+          <td>{{ contenido.get_tipo_display }}</td>
+          <td>{{ contenido.get_plataforma_display }}</td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              –
+            {% elif contenido.calificacion %}
+              <span class="badge bg-warning text-dark">{{ contenido.get_calificacion_display }}</span>
+            {% else %}
+              –
+            {% endif %}
+          </td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              –
+            {% else %}
+              {{ contenido.veces_vista }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              –
+            {% else %}
+              {{ contenido.volveria_a_ver|yesno:"Sí,No" }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              –
+            {% else %}
+              {% if contenido.favorita %}
+                <span class="text-warning">⭐</span>
+              {% else %}
+                No
+              {% endif %}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              –
+            {% else %}
+              {{ contenido.tendra_continuacion|yesno:"Sí,No" }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if contenido.estado == 'pendiente' %}
+              <span class="badge bg-danger">Pendiente</span>
+            {% else %}
+              <span class="badge bg-success">Vista</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="{% url 'editar_contenido' contenido.pk %}" class="btn btn-sm btn-outline-light me-1"><i class="bi bi-pencil"></i></a>
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal"
+                    data-id="{{ contenido.id }}" data-titulo="{{ contenido.titulo }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10">No hay contenido registrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eliminarModalLabel"><i class="bi bi-exclamation-triangle-fill text-warning"></i> Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro que deseas eliminar <strong id="tituloAEliminar"></strong>?
+      </div>
+      <div class="modal-footer">
+        <form id="formEliminar" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('confirmarEliminarModal');
+  modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const id = button.getAttribute('data-id');
+    const titulo = button.getAttribute('data-titulo');
+
+    document.getElementById('tituloAEliminar').textContent = `"${titulo}"`;
+
+    const form = document.getElementById('formEliminar');
+    form.action = `/eliminar/${id}/`;  // Asegúrate de que esta URL coincida con tu ruta de eliminación
+  });
+</script>
+{% endblock %}
